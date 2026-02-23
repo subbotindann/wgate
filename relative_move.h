@@ -69,7 +69,7 @@ extern void destroy_virtual_mouse() {
     }
 }
 
-int emit_m(int type, int code, int val){
+int emit_mouse(int type, int code, int val){
     memset(&ev, 0, sizeof(ev));
     ev.type = type;
     ev.code = code;
@@ -78,8 +78,12 @@ int emit_m(int type, int code, int val){
     return 0;
 }
 
-int sync_m(){
-    emit_m(EV_SYN, SYN_REPORT, 0);
+int sync_mouse(){
+    ev.type = EV_SYN;
+    ev.code = SYN_REPORT;
+    ev.value = 0;
+    
+    write(fd, &ev, sizeof(ev));
     return 0;
 }
 
@@ -94,23 +98,23 @@ extern void mouseMove(int rel_x, int rel_y) {
     // Create movement events
     
     // X movement
-    emit_m(EV_REL, REL_X, rel_x);
+    emit_mouse(EV_REL, REL_X, rel_x);
     
     // Y movement
-    emit_m(EV_REL, REL_Y, rel_y);
+    emit_mouse(EV_REL, REL_Y, rel_y);
     
     // Sync event
-    sync_m();
+    sync_mouse();
     // Small delay to ensure events are processed
     sleep(0);
 }
 
 extern void mouseClick(int button){
-    emit_m(EV_KEY, button, 1);
-    sync_m();
+    emit_mouse(EV_KEY, button, 1);
+    sync_mouse();
     
-    emit_m(EV_KEY, button, 0);
-    sync_m();
+    emit_mouse(EV_KEY, button, 0);
+    sync_mouse();
 
 }
 

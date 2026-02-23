@@ -15,7 +15,7 @@ extern void destroy_keyboard(){
     return;
 }
 
-void emit(int type, int code, int val) {
+extern void emit(int type, int code, int val) {
     struct input_event ie;
 
     ie.type = type;
@@ -29,6 +29,10 @@ void emit(int type, int code, int val) {
         perror("write event");
         exit(1);
     }
+    ie.type = EV_SYN;
+    ie.code = SYN_REPORT;
+    ie.value = 0;
+    write(fd_k, &ie, sizeof(ie));
 }
 
 extern int initilize_keyboard(){
@@ -65,10 +69,10 @@ extern int initilize_keyboard(){
     }
 }
 
-extern int press_button(int PRESS_KEY){
-    emit(EV_KEY, PRESS_KEY, 1); 
-    emit(EV_SYN, SYN_REPORT, 0);
-    emit(EV_KEY, PRESS_KEY, 0); 
-    emit(EV_SYN, SYN_REPORT, 0); 
-    return 0;
-}
+// extern int press_button(int PRESS_KEY){
+//     emit(EV_KEY, PRESS_KEY, 1); 
+//     emit(EV_SYN, SYN_REPORT, 0);
+//     emit(EV_KEY, PRESS_KEY, 0); 
+//     emit(EV_SYN, SYN_REPORT, 0); 
+//     return 0;
+// }

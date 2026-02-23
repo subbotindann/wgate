@@ -182,7 +182,7 @@ void send_absolute(int x, int y, int pressure) {
 }
 
 // Move to absolute position (NO relative calculation!)
-extern void move_absolute(int x, int y) {
+extern void SetCursorPos(int x, int y) {
     if (tablet.fd < 0) {
         printf("Tablet not initialized!\n");
         return;
@@ -261,40 +261,6 @@ void pen_up() {
 
 
 // Click at absolute position
-void click_absolute(int x, int y, int button) {
-    printf("Clicking at (%d, %d)\n", x, y);
-    
-    move_absolute(x, y);
-    usleep(100000);  // 100ms delay
-    
-    if (button == 1) {
-        // Left click (pen down/up)
-        pen_down(512);  // Medium pressure
-        usleep(50000);  // 50ms
-        pen_up();
-    } else if (button == 3) {
-        // Right click (stylus button)
-        struct input_event ev;
-        
-        // Press stylus button (right click)
-        memset(&ev, 0, sizeof(ev));
-        ev.type = EV_KEY;
-        ev.code = BTN_STYLUS2;
-        ev.value = 1;
-        write(tablet.fd, &ev, sizeof(ev));
-        
-        send_absolute(x, y, 512);
-        usleep(50000);
-        
-        // Release
-        memset(&ev, 0, sizeof(ev));
-        ev.type = EV_KEY;
-        ev.code = BTN_STYLUS2;
-        ev.value = 0;
-        write(tablet.fd, &ev, sizeof(ev));
-        
-        send_absolute(x, y, 0);
-    }
-}
+
 
 

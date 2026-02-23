@@ -25,6 +25,8 @@
 // for arguments
 #include "arg.h"
 char *argv0;
+extern int x;
+extern int y;
 
 char *emulate_cmd = NULL;
 
@@ -206,7 +208,7 @@ static void pointer_handle_enter(void *data, struct wl_pointer *wl_pointer, uint
   cursor_x = wl_fixed_to_int(surface_x);
   cursor_y = wl_fixed_to_int(surface_y);
 
-  printf("%d %d enter\n", cursor_x, cursor_y);
+  //printf("%d %d enter\n", cursor_x, cursor_y);
 
   if(no_animation == true) {
     //running = false;

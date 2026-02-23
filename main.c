@@ -5,22 +5,19 @@
 #include <unistd.h>
 #include "absMove.h"
 #include "keyboard.h"
+#include "structures.h"
 
-typedef struct
-{
-    int left;
-    int top;
-    int right;
-    int bottom;
-} RECT;
+
+
 
 void MAIN_INIT(){
     init_tablet();
     init_layer_shell();
     init_virtual_mouse();
+    initilize_keyboard();
     pthread_t cursor_pos_thread;
     pthread_create(&cursor_pos_thread, NULL, update_cursor_pos, NULL); 
-    initilize_keyboard();
+    
 }
 void MAIN_DESTROY(){
     destroy_tablet();
@@ -38,19 +35,19 @@ void* restrict_cursor(void* arg){
     printf("top: %d \n", rect->top);
     while (true){
         if (cursor_x > right){
-            move_absolute(right, cursor_y);
+            SetCursorPos(right, cursor_y);
             printf("right \n");
         }
         if (cursor_x < left){
-            move_absolute(left, cursor_y);
+            SetCursorPos(left, cursor_y);
             printf("left \n");
         }
         if (cursor_y < top){
-            move_absolute(cursor_x, top);
+            SetCursorPos(cursor_x, top);
             printf("top \n");
         }
         if (cursor_y > bottom){
-            move_absolute(cursor_x, bottom);
+            SetCursorPos(cursor_x, bottom);
             printf("bottom \n");
         }
     }
@@ -65,11 +62,85 @@ bool ClipCursor(RECT rect){
     return 0;
 }
 
+bool GetCursorPos(POINT *point){
+    (*point).x = cursor_x;
+    (*point).y = cursor_y;
+    return 1;
+}
+
+UINT SendInput(UINT cInputs, INPUT inputs[], int cbSize){
+    for (int i = 0; i < cInputs; i++){
+        INPUT input = inputs[i];
+        switch (input.type){
+            case (0):
+                switch (input.mi.dwFlags){
+                    case (MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE):
+                        SetCursorPos(input.mi.dx, input.mi.dy);
+                        break;
+                    case (MOUSEEVENTF_MOVE):
+                        mouseMove(input.mi.dx, input.mi.dy);
+                        break;
+                    case (MOUSEEVENTF_LEFTDOWN):
+                        emit_mouse(EV_KEY, BTN_LEFT, 1);
+                        sync_mouse();
+                        break;
+                    case (MOUSEEVENTF_LEFTUP):
+                        emit_mouse(EV_KEY, BTN_LEFT, 0);
+                        sync_mouse();
+                        break;
+                    case (MOUSEEVENTF_RIGHTDOWN):
+                        emit_mouse(EV_KEY, BTN_RIGHT, 1);
+                        sync_mouse();
+                        break;
+                    case (MOUSEEVENTF_RIGHTUP):
+                        emit_mouse(EV_KEY, BTN_RIGHT, 0);
+                        sync_mouse();
+                        break;
+                    case (MOUSEEVENTF_WHEEL):
+                        emit_mouse(EV_REL, REL_WHEEL, input.mi.mouseData);
+                        sync_mouse();
+                        break;
+                    case (MOUSEEVENTF_HWHEEL):
+                        emit_mouse(EV_REL, REL_HWHEEL, input.mi.mouseData);
+                        sync_mouse();
+                        break;
+                    
+                }
+                
+                break;
+                
+            case (1):
+                bool is_pressed = 0;
+                if (input.ki.dwFlags == NULL){
+                    is_pressed = 1;
+                }
+                printf("Pressing");
+                emit(EV_KEY, input.ki.wVk, is_pressed);
+                sleep(1);
+                break;
+            default:
+                return 1;
+
+        }
+        sleep(1);
+    }
+    return 0;
+}
+
+
 int main(){
     printf("Hello world! \n");
     MAIN_INIT();
-    sleep(2);
-    mouseClick(BTN_LEFT);
+    
+    
+    INPUT inputs[2] = {0};
+    
+    inputs[0].type = INPUT_KEYBOARD;
+    inputs[0].ki.wVk = KEY_LEFTMETA;  // Левая клавиша Windows
+    inputs[0].ki.dwFlags = 0;     // Нажатие
+    printf("%d", );
+    //SendInput(2, inputs, sizeof(INPUT));
+
     
     MAIN_DESTROY();
     return 0;
