@@ -1,0 +1,16 @@
+# local build outputs
+/target/
+
+# local test artifacts
+/tests/**/*.exe
+/tests/**/*.waygate.plan
+/tests/tmp/
+
+# local helper scripts copied by users
+installer.sh
+install.sh
+*.installer.sh
+
+# env and editor
+.env
+.DS_Store
