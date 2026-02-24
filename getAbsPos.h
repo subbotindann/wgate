@@ -21,6 +21,7 @@
 #include "wlr-virtual-pointer-unstable-v1.h"
 #include "viewporter.h"
 
+struct zwp_pointer_constraints_v1 *pointer_constraints = NULL;
 
 // for arguments
 #include "arg.h"
@@ -282,6 +283,8 @@ static const struct wl_seat_listener seat_listener = {
   .capabilities = seat_handle_capabilities,
 };
 
+
+
 static void global_registry_handler(void *data, struct wl_registry *registry,
     uint32_t id, const char *interface, uint32_t version)
 {
@@ -382,6 +385,8 @@ extern void* update_cursor_pos(void* arg){
     }
 }
 
+
+
 extern int init_layer_shell()
 {
 
@@ -445,6 +450,8 @@ extern int init_layer_shell()
   zwlr_layer_surface_v1_set_keyboard_interactivity(layer_surface, false);
   zwlr_layer_surface_v1_set_exclusive_zone(layer_surface, -1);
   wl_surface_commit(surface);
+
+
 
   delay_ms = animation_duration_in_ms;
   start_ms = now_ms();
