@@ -44,9 +44,20 @@ bool ClipCursor(RECT rect){
 
 int main(){
     MAIN_INIT();
-    INPUT inputs[1];
-    inputs[0].type = INPUT_KEYBOARD;
-    inputs[0].ki.wVk = VK_A;
-    SendInput(1, inputs, sizeof(INPUT));
+    SYSTEMTIME st;
+    
+    // Получаем текущее системное время (в UTC)
+    GetLocalTime(&st);
+    
+    printf("cuurent year: %d \n", st.wYear);
+    printf("cuurent month: %d \n", st.wMonth);
+    printf("cuurent day: %d \n", st.wDay);
+    printf("cuurent hour: %d \n", st.wHour);
+    printf("cuurent minute: %d \n", st.wMinute);
+    printf("cuurent second: %d \n", st.wSecond);
+
+    
+
+
     MAIN_DESTROY();
 }
